@@ -50,15 +50,15 @@ def madelung(screening_length=inf, g_ewald=7.1, kmax=12, approx=False):
                     t /= 2
             s += t
     # This is where we multiply by 8.
-    # (also need a 4*pi because we are using Gaussian units)
+    # (We also need a 4*pi because we are using Gaussian units.)
     s *= 32 * pi 
 
     # See last line of eqn (2.19) of Salin and Caillol.
-    # (Note sign error in final term.)
+    # (Note the sign error in the final term.)
     s -= b * exp(-a2 / b2) / sqrt(pi)
     s += a * erfc(a / b)
     if a > 0.001:
-        s += 4 * pi * (exp(-a2 / b2) - 1) / a2
+        s += 4*pi * (exp(-a2 / b2) - 1) / a2
     else: # If a is small, use expansion about a = 0.
         s += -4*pi/b2 + 2*pi*a2/(b2*b2) - 2*pi*a2*a2/(3*b2*b2*b2)
 
