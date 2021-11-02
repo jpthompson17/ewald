@@ -1,20 +1,29 @@
-"""Ewald summation for Madelung energy
-"""
-
 from math import inf, isinf, pi, sqrt, exp, erfc
 from itertools import product
 
+
 def madelung(screening_length=inf, g_ewald=7.1, kmax=12, approx=False):
-    """Madelung constant for 1x1x1 Yukawa lattice with neutralizing background.
+    """Compute the Madelung constant for a 1x1x1 Yukawa lattice with a 
+    uniform neutralizing background.
 
-    Keyword arguments:
-    screening_length -- the screening length (default inf)
-    g_ewald -- Ewald splitting parameter (default 7.1)
-    kmax -- range of reciprocal space sum (default 12)
-    approx -- whether to use closed-form approximation (default False)
+ 
+    Parameters
+    ----------
+    screening_length : float, default inf
+        The dimensionless screening length. The default corresponds
+        to the bare Coulomb potential.
+    g_ewald : float, default 7.1
+        Ewald splitting parameter.
+    kmax : int, default 12
+        Range of the reciprocal space sum.
+    approx : bool, default False
+        Whether to use the closed-form approximation given by [??].
 
+    Notes
+    -----
     See eqn (2.19) of Salin and Caillol, J. Chem. Phys. 113, 10459 (2000).
     (alpha = 1/screening_length, beta = g_ewald)
+
     """
 
     if isinf(screening_length):
@@ -22,10 +31,10 @@ def madelung(screening_length=inf, g_ewald=7.1, kmax=12, approx=False):
     if screening_length == 0:
         return 0
 
-    a = 1.0 / screening_length # screening wavenumber
+    a = 1.0 / screening_length  # screening wavenumber
     a2 = a * a
 
-    # closed-form approximation
+    # If approx is True, return the closed-form approximation
     if approx:
         r = 0.911544
         r2 = r * r
@@ -36,7 +45,7 @@ def madelung(screening_length=inf, g_ewald=7.1, kmax=12, approx=False):
     kmax2 = kmax * kmax
     pi2 = pi * pi
 
-    s = 0 # running total
+    s = 0  # running total
 
     # Sum over the (+,+,+) octant, then multiply the result by 8.
     for k in list(product(range(kmax + 1), repeat=3))[1:]:
@@ -59,7 +68,8 @@ def madelung(screening_length=inf, g_ewald=7.1, kmax=12, approx=False):
     s += a * erfc(a / b)
     if a > 0.001:
         s += 4*pi * (exp(-a2 / b2) - 1) / a2
-    else: # If a is small, use expansion about a = 0.
+    else:  # If a is small, expand about a = 0.
         s += -4*pi/b2 + 2*pi*a2/(b2*b2) - 2*pi*a2*a2/(3*b2*b2*b2)
 
     return s
+
